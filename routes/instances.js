@@ -5,13 +5,14 @@ const Redis = require('ioredis');
 const logger = require('../utils/logger');
 const getWorldometerPage = require('../scrapers/covid-19/getWorldometers');
 const getStates = require('../scrapers/covid-19/getStates');
-const jhuLocations = require('../scrapers/covid-19/jhuLocations');
+// const jhuLocations = require('../scrapers/covid-19/jhuLocations');
 const historical = require('../scrapers/covid-19/historical');
 const nytData = require('../scrapers/covid-19/nytData');
 const appleData = require('../scrapers/covid-19/appleMobilityData');
 const govData = require('../scrapers/covid-19/govScrapers/getGovData');
 const { getVaccineData, getVaccineCoverageData, getVaccineStateCoverageData } = require('../scrapers/covid-19/getVaccine');
 const getTherapeuticsData = require('../scrapers/covid-19/getTherapeutics');
+const variantsData = require('../scrapers/covid-19/getVariants');
 const getCDCDInfluenzaData = require('../scrapers/influenza/getCDC');
 
 // KEYS
@@ -30,7 +31,7 @@ module.exports = {
 	scraper: {
 		getWorldometerPage,
 		getStates,
-		jhuLocations,
+		// jhuLocations,
 		historical,
 		nytData,
 		appleData,
@@ -38,7 +39,7 @@ module.exports = {
 			await Promise.all([
 				getWorldometerPage(keys, redis),
 				getStates(keys, redis),
-				jhuLocations.jhudataV2(keys, redis),
+				// jhuLocations.jhudataV2(keys, redis),
 				historical.historicalV2(keys, redis),
 				historical.getHistoricalUSADataV2(keys, redis)
 			]);
@@ -71,6 +72,10 @@ module.exports = {
 		executeScraperTherapeutics: async () => {
 			await getTherapeuticsData(keys, redis);
 			logger.info('Finished Therapeutics scraping!');
+		},
+		executeScraperVariants: async () => {
+			await variantsData(keys, redis);
+			logger.info('Finished Variants scraping!');
 		},
 		excecuteScraperInfluenza: async () => {
 			await getCDCDInfluenzaData(keys, redis);
